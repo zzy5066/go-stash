@@ -6,10 +6,8 @@ go-stash是一个高效的从Kafka获取，根据配置的规则进行处理，�
 
 go-stash有大概logstash 5倍的吞吐性能，并且部署简单，一个可执行文件即可。
 
-![go-stash](doc/flow.png)
+![go-stash](https://pro-public.xiaoheiban.cn/icon/84cc2f235035d7f1da6df512d4ba97b7.png)
 
-ES写入速度参考：
-![go-stash](doc/es.png)
 
 ### 安装
 
@@ -173,7 +171,39 @@ Offset: first
 
 
 
+## ES性能测试写入
 
+![go-stash](https://pro-public.xiaoheiban.cn/icon/ee207a1cb094c0b3dcaa91ae75b118b8.png)
+
+### 测试环境
+- stash服务器：3台 4核 8G
+- es服务器： 15台 16核  64G
+
+### 关键配置
+
+```shell
+- Input:
+      NumConns: 3
+      NumProducers: 10
+      NumConsumers: 60
+      MinBytes: 1048576
+      MaxBytes: 10485760
+  Filters:
+  - Action: remove_field
+    Fields:
+    - message
+    - source
+    - beat
+    - fields
+    - input_type
+    - offset
+    - request_time
+  Output:
+      Index: "nginx_pro-{{yyyy.MM.d}}"
+      Compress: false
+      MaxChunkBytes: 5242880
+      TimeZone: UTC
+```
 
 
 ### 微信交流群
@@ -187,3 +217,5 @@ Offset: first
 如果您发现bug请及时提issue，我们会尽快确认并修改。
 
 添加我的微信：kevwan，请注明go-stash，我拉进go-stash社区群🤝
+
+### --END
