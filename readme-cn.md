@@ -24,7 +24,7 @@ cd stash && go build stash.go
 config.yaml示例如下:
 
 ```yaml
-Processors:
+Clusters:
 - Input:
     Kafka:
       Name: go-stash
@@ -36,9 +36,9 @@ Processors:
       - "172.16.48.43:9092"
       Topic: ngapplog
       Group: stash
-      NumConns: 3
-      NumProducers: 10
-      NumConsumers: 60
+      Conns: 3
+      Consumers: 10
+      Processors: 60
       MinBytes: 1048576
       MaxBytes: 10485760
       Offset: first
@@ -84,21 +84,21 @@ Processors:
 ### input
 
 ```shell
-NumConns: 3
-NumProducers: 10
-NumConsumers: 60
+Conns: 3
+Consumers: 10
+Processors: 60
 MinBytes: 1048576
 MaxBytes: 10485760
 Offset: first
 ```
-#### NumConns
+#### Conns
   链接kafka的链接数，链接数依据cpu的核数，一般<= CPU的核数；
 
-#### NumProducers
-  每个连接数打开的线程数，计算规则为NumConns * NumProducers，不建议超过分片总数，比如topic分片为30，NumConns * NumProducers <= 30
+#### Consumers
+  每个连接数打开的线程数，计算规则为Conns * Consumers，不建议超过分片总数，比如topic分片为30，Conns *Consumers <= 30
 
-#### NumConsumers
-  处理数据的线程数量，依据CPU的核数，可以适当增加，建议配置：NumProducers * 2 或 NumProducers * 3，例如：60  或 90
+#### Processors
+  处理数据的线程数量，依据CPU的核数，可以适当增加，建议配置：Consumers * 2 或 Consumers * 3，例如：60  或 90
 
 #### MinBytes MaxBytes
   每次从kafka获取数据块的区间大小，默认为1M~10M，网络和IO较好的情况下，可以适当调高
@@ -158,10 +158,10 @@ Offset: first
   索引名称，indexname-{{yyyy.MM.dd}}表示年.月.日，也可以用{{yyyy-MM-dd}}，格式自己定义
 
 #### MaxChunkBytes
-  每次往ES提交的bulk大小，默认是5M，可依据ES的IO情况，适当的调整
+  每次往ES提交的bulk大小，默认是5M，可依据ES的io情况，适当的调整
 
 #### GracePeriod
-  默认为10s，在程序关闭后，在10s内用于处理余下的消费和数据
+  默认为10s，在程序关闭后，在10s内用于处理余下的消费和数据，优雅退出
 
 #### Compress
   数据压缩，压缩会减少传输的数据量，但会增加一定的处理性能，可选值true/false，默认为false
@@ -171,9 +171,10 @@ Offset: first
 
 
 
-## ES性能测试写入
 
-![go-stash](https://pro-public.xiaoheiban.cn/icon/ee207a1cb094c0b3dcaa91ae75b118b8.png)
+
+## ES性能写入测试
+
 
 ### 测试环境
 - stash服务器：3台 4核 8G
@@ -183,9 +184,9 @@ Offset: first
 
 ```shell
 - Input:
-      NumConns: 3
-      NumProducers: 10
-      NumConsumers: 60
+      Conns: 3
+      Consumers: 10
+      Processors: 60
       MinBytes: 1048576
       MaxBytes: 10485760
   Filters:
@@ -204,6 +205,9 @@ Offset: first
       MaxChunkBytes: 5242880
       TimeZone: UTC
 ```
+
+### 写入速度平均在15W/S以上
+![go-stash](https://pro-public.xiaoheiban.cn/icon/ee207a1cb094c0b3dcaa91ae75b118b8.png)
 
 
 ### 微信交流群
