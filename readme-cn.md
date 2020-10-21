@@ -98,7 +98,7 @@ Offset: first
   每个连接数打开的线程数，计算规则为Conns * Consumers，不建议超过分片总数，比如topic分片为30，Conns *Consumers <= 30
 
 #### Processors
-  处理数据的线程数量，依据CPU的核数，可以适当增加，建议配置：Consumers * 2 或 Consumers * 3，例如：60  或 90
+  处理数据的线程数量，依据CPU的核数，可以适当增加，建议配置：Conns * Consumers * 2 或 Conns * Consumers * 3，例如：60  或 90
 
 #### MinBytes MaxBytes
   每次从kafka获取数据块的区间大小，默认为1M~10M，网络和IO较好的情况下，可以适当调高
